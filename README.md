@@ -70,6 +70,7 @@ nff_enabledgamemodes ""
 > If you have any questions that aren't addressed below, feel free to message me or post on this [thread](https://forums.alliedmods.net/showthread.php?t=302822).
 
 1. How do I enable/disable the plugin in certain game modes?
+
 You must specify the game modes in the nff_enabledgamemodes and nff_disabledgamemodes convars.
 
 Here are some scenarios and their outcomes:

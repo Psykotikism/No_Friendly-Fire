@@ -74,6 +74,7 @@ nff_enabledgamemodes ""
 You must specify the game modes in the nff_enabledgamemodes and nff_disabledgamemodes convars.
 
 Here are some scenarios and their outcomes:
+
 - Scenario 1
 ```
 nff_enabledgamemodes "" // The plugin is enabled in all game modes.

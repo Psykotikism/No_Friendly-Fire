@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 6.0 (June 18, 2018)
+
+1. Bug fixes:
+
+- Fixed the nff_enabledgamemodes and nff_disabledgamemodes convars not working properly.
+
 ## Version 5.5 (June 16, 2018)
 
 1. Bug fixes:

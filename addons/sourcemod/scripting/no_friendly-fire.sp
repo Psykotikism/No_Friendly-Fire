@@ -3,7 +3,7 @@
 #include <sdktools>
 #pragma semicolon 1
 #pragma newdecls required
-#define NFF_VERSION "6.0"
+#define NFF_VERSION "6.5"
 
 public Plugin myinfo =
 {
@@ -14,7 +14,6 @@ public Plugin myinfo =
 	url = "https://forums.alliedmods.net/showthread.php?t=302822"
 };
 
-char g_sGameName[32];
 ConVar g_cvNFFAdvanced;
 ConVar g_cvNFFBurnAdvanced;
 ConVar g_cvNFFBurnEasy;
@@ -32,9 +31,10 @@ ConVar g_cvNFFNormal;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	GetGameFolderName(g_sGameName, sizeof(g_sGameName));
-	if (!StrEqual(g_sGameName, "left4dead", false) && !StrEqual(g_sGameName, "left4dead2", false))
+	EngineVersion evEngine = GetEngineVersion();
+	if (evEngine != Engine_Left4Dead && evEngine != Engine_Left4Dead2)
 	{
+		strcopy(error, err_max, "No Friendly-fire only supports Left 4 Dead 1 & 2.");
 		return APLRes_SilentFailure;
 	}
 	return APLRes_Success;
@@ -107,8 +107,8 @@ void vChangeCvars()
 
 stock bool bIsL4D2Game()
 {
-	GetGameFolderName(g_sGameName, sizeof(g_sGameName));
-	return (StrEqual(g_sGameName, "left4dead2", false));
+	EngineVersion evEngine = GetEngineVersion();
+	return evEngine == Engine_Left4Dead2;
 }
 
 stock bool bIsSystemValid()

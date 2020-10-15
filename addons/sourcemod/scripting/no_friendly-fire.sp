@@ -1,9 +1,11 @@
-// No Friendly-fire
 #include <sourcemod>
+#include <sdkhooks>
 #include <sdktools>
+
 #pragma semicolon 1
 #pragma newdecls required
-#define NFF_VERSION "6.5"
+
+#define NFF_VERSION "7.0"
 
 public Plugin myinfo =
 {
@@ -14,126 +16,299 @@ public Plugin myinfo =
 	url = "https://forums.alliedmods.net/showthread.php?t=302822"
 };
 
-ConVar g_cvNFFAdvanced;
-ConVar g_cvNFFBurnAdvanced;
-ConVar g_cvNFFBurnEasy;
-ConVar g_cvNFFBurnExpert;
-ConVar g_cvNFFBurnNormal;
-ConVar g_cvNFFDisabledGameModes;
-ConVar g_cvNFFEnabledGameModes;
-ConVar g_cvNFFEnable;
-ConVar g_cvNFFEasy;
-ConVar g_cvNFFExpert;
-ConVar g_cvNFFGameMode;
-ConVar g_cvNFFGLScale;
-ConVar g_cvNFFGLScaleSelf;
-ConVar g_cvNFFNormal;
+bool g_bLateLoad, g_bLeft4Dead2;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	EngineVersion evEngine = GetEngineVersion();
-	if (evEngine != Engine_Left4Dead && evEngine != Engine_Left4Dead2)
+	if (evEngine == Engine_Left4Dead)
+	{
+		g_bLeft4Dead2 = false;
+	}
+	else if (evEngine == Engine_Left4Dead2)
+	{
+		g_bLeft4Dead2 = true;
+	}
+	else if (evEngine != Engine_Left4Dead && evEngine != Engine_Left4Dead2)
 	{
 		strcopy(error, err_max, "No Friendly-fire only supports Left 4 Dead 1 & 2.");
+
 		return APLRes_SilentFailure;
 	}
+
+	g_bLateLoad = late;
+
 	return APLRes_Success;
 }
 
+#define MODEL_FIREWORK "models/props_junk/explosive_box001.mdl"
+#define MODEL_GASCAN "models/props_junk/gascan001a.mdl"
+#define MODEL_OXYGEN "models/props_equipment/oxygentank01.mdl"
+#define MODEL_PROPANE "models/props_junk/propanecanister001a.mdl"
+
+bool g_bMapStarted;
+
+ConVar g_cvNFFDisabledGameModes, g_cvNFFEnable, g_cvNFFEnabledGameModes, g_cvNFFGameModeTypes, g_cvNFFMPGameMode;
+
+int g_iCurrentMode, g_iTeamID[2048], g_iUserID[MAXPLAYERS + 1];
+
 public void OnPluginStart()
 {
-	g_cvNFFAdvanced = FindConVar("survivor_friendly_fire_factor_hard");
-	g_cvNFFBurnAdvanced = FindConVar("survivor_burn_factor_hard");
-	g_cvNFFBurnEasy = FindConVar("survivor_burn_factor_easy");
-	g_cvNFFBurnExpert = FindConVar("survivor_burn_factor_expert");
-	g_cvNFFBurnNormal = FindConVar("survivor_burn_factor_normal");
-	g_cvNFFDisabledGameModes = CreateConVar("nff_disabledgamemodes", "", "Disable the plugin in these game modes.\nGame mode limit: 64\nCharacter limit for each game mode: 32\n(Empty: None)\n(Not empty: Disabled in these game modes.)");
-	g_cvNFFEnabledGameModes = CreateConVar("nff_enabledgamemodes", "", "Enable the plugin in these game modes.\nGame mode limit: 64\nCharacter limit for each game mode: 32\n(Empty: None)\n(Not empty: Enabled in these game modes.)");
-	g_cvNFFEnable = CreateConVar("nff_enable", "1", "Enable the plugin?\n(0: OFF)\n(1: ON)");
-	g_cvNFFEasy = FindConVar("survivor_friendly_fire_factor_easy");
-	g_cvNFFExpert = FindConVar("survivor_friendly_fire_factor_expert");
-	g_cvNFFGameMode = FindConVar("mp_gamemode");
-	g_cvNFFGLScale = FindConVar("grenadelauncher_ff_scale");
-	g_cvNFFGLScaleSelf = FindConVar("grenadelauncher_ff_scale_self");
-	g_cvNFFNormal = FindConVar("survivor_friendly_fire_factor_normal");
+	g_cvNFFDisabledGameModes = CreateConVar("nff_disabledgamemodes", "", "Disable the No Friendly-Fire in these game modes.\nGame mode limit: 64\nCharacter limit for each game mode: 32\nEmpty: None\nNot empty: Disabled in these game modes.");
+	g_cvNFFEnable = CreateConVar("nff_enable", "1", "Enable the plugin?\n0: OFF\n1: ON", _, true, 0.0, true, 1.0);
+	g_cvNFFEnabledGameModes = CreateConVar("nff_enabledgamemodes", "", "Enable the No Friendly-Fire in these game modes.\nGame mode limit: 64\nCharacter limit for each game mode: 32\nEmpty: None\nNot empty: Enabled in these game modes.");
+	g_cvNFFGameModeTypes = CreateConVar("nff_gamemodetypes", "0", "Enable the No Friendly-Fire in these game mode types.\n0 OR 15: ALL\n1: Co-op\n2: Versus\n3: Survival\n4: Scavenge", _, true, 0.0, true, 15.0);
+	g_cvNFFMPGameMode = FindConVar("mp_gamemode");
 	CreateConVar("nff_pluginversion", NFF_VERSION, "No Friendly Fire version", FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	g_cvNFFDisabledGameModes.AddChangeHook(vNFFCvarChanges);
-	g_cvNFFEnabledGameModes.AddChangeHook(vNFFCvarChanges);
-	g_cvNFFEnable.AddChangeHook(vNFFCvarChanges);
+
 	AutoExecConfig(true, "no_friendly-fire");
-	vChangeCvars();
-}
 
-public void vNFFCvarChanges(ConVar convar, const char[] oldvalue, const char[] newvalue)
-{
-	vChangeCvars();
-}
+	if (g_bLateLoad)
+	{
+		for (int iPlayer = 1; iPlayer <= MaxClients; iPlayer++)
+		{
+			if (IsClientInGame(iPlayer))
+			{
+				OnClientPutInServer(iPlayer);
+			}
+		}
 
-void vChangeCvars()
-{
-	if (g_cvNFFEnable.BoolValue && bIsSystemValid())
-	{
-		g_cvNFFEasy.SetString("0");
-		g_cvNFFNormal.SetString("0");
-		g_cvNFFAdvanced.SetString("0");
-		g_cvNFFExpert.SetString("0");
-		g_cvNFFBurnEasy.SetString("0");
-		g_cvNFFBurnNormal.SetString("0");
-		g_cvNFFBurnAdvanced.SetString("0");
-		g_cvNFFBurnExpert.SetString("0");
-		if (bIsL4D2Game())
+		int iProp = -1;
+		char sModel[64];
+		while ((iProp = FindEntityByClassname(iProp, "prop_physics") != INVALID_ENT_REFERENCE))
 		{
-			g_cvNFFGLScale.SetString("0");
-			g_cvNFFGLScaleSelf.SetString("0");
+			GetEntPropString(iProp, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
+			if (StrEqual(sModel, MODEL_OXYGEN) || StrEqual(sModel, MODEL_PROPANE) || StrEqual(sModel, MODEL_GASCAN) || (g_bLeft4Dead2 && StrEqual(sModel, MODEL_FIREWORK)))
+			{
+				SDKHook(iProp, SDKHook_OnTakeDamage, OnTakePropDamage);
+			}
 		}
-	}
-	else if (!g_cvNFFEnable.BoolValue || !bIsSystemValid())
-	{
-		g_cvNFFEasy.SetString("0");
-		g_cvNFFNormal.SetString("0.1");
-		g_cvNFFAdvanced.SetString("0.3");
-		g_cvNFFExpert.SetString("0.5");
-		g_cvNFFBurnEasy.SetString("0.2");
-		g_cvNFFBurnNormal.SetString("0.2");
-		g_cvNFFBurnAdvanced.SetString("0.4");
-		g_cvNFFBurnExpert.SetString("1");
-		if (bIsL4D2Game())
-		{
-			g_cvNFFGLScale.SetString("0.12");
-			g_cvNFFGLScaleSelf.SetString("0.12");
-		}
+
+		g_bLateLoad = false;
 	}
 }
 
-stock bool bIsL4D2Game()
+public void OnMapStart()
 {
-	EngineVersion evEngine = GetEngineVersion();
-	return evEngine == Engine_Left4Dead2;
+	g_bMapStarted = true;
 }
 
-stock bool bIsSystemValid()
+public void OnClientPutInServer(int client)
 {
-	char sGameMode[32];
-	char sConVarModes[32];
-	g_cvNFFGameMode.GetString(sGameMode, sizeof(sGameMode));
-	Format(sGameMode, sizeof(sGameMode), ",%s,", sGameMode);
-	g_cvNFFEnabledGameModes.GetString(sConVarModes, sizeof(sConVarModes));
-	if (strcmp(sConVarModes, ""))
+	g_iUserID[client] = GetClientUserId(client);
+
+	SDKHook(client, SDKHook_OnTakeDamage, OnTakePlayerDamage);
+}
+
+public void OnMapEnded()
+{
+	g_bMapStarted = false;
+}
+
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	if (IsValidEntity(entity))
 	{
-		Format(sConVarModes, sizeof(sConVarModes), ",%s,", sConVarModes);
-		if (StrContains(sConVarModes, sGameMode, false) == -1)
+		g_iTeamID[entity] = 0;
+
+		if (StrEqual(classname, "inferno") || StrEqual(classname, "pipe_bomb_projectile") || (g_bLeft4Dead2 && (StrEqual(classname, "fire_cracker_blast") || StrEqual(classname, "grenade_launcher_projectile"))))
+		{
+			SDKHook(entity, SDKHook_SpawnPost, OnSpawn);
+		}
+		else if (StrEqual(classname, "physics_prop") || StrEqual(classname, "prop_physics"))
+		{
+			SDKHook(entity, SDKHook_SpawnPost, OnSpawnProp);
+		}
+		else if (StrEqual(classname, "prop_fuel_barrel"))
+		{
+			SDKHook(entity, SDKHook_OnTakeDamage, OnTakePropDamage);
+		}
+	}
+}
+
+static void OnSpawn(int entity)
+{
+	int iAttacker = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+	if (bIsValidClient(iAttacker))
+	{
+		g_iTeamID[entity] = GetClientTeam(iAttacker);
+	}
+}
+
+static void OnSpawnProp(int entity)
+{
+	static char sModel[64];
+	GetEntPropString(entity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
+	if (StrEqual(sModel, MODEL_OXYGEN) || StrEqual(sModel, MODEL_PROPANE) || StrEqual(sModel, MODEL_GASCAN) || (g_bLeft4Dead2 && StrEqual(sModel, MODEL_FIREWORK)))
+	{
+		SDKHook(entity, SDKHook_OnTakeDamage, OnTakePropDamage);
+	}
+}
+
+public Action OnTakePropDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
+{
+	if (!g_cvNFFEnable.BoolValue || !bIsPluginEnabled())
+	{
+		return Plugin_Continue;
+	}
+	else if (IsValidEntity(inflictor) && attacker == inflictor && g_iTeamID[inflictor] == 2)
+	{
+		attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
+		if (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker])))
+		{
+			return Plugin_Handled;
+		}
+	}
+	else if (0 < attacker <= MaxClients)
+	{
+		if (g_iTeamID[inflictor] == 2 && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker] || GetClientTeam(attacker) != 2))
+		{
+			return Plugin_Handled;
+		}
+	}
+
+	return Plugin_Continue;
+}
+
+public Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
+{
+	if (!g_cvNFFEnable.BoolValue || !bIsPluginEnabled())
+	{
+		return Plugin_Continue;
+	}
+	else if (bIsValidClient(victim) && bIsValidClient(attacker) && GetClientTeam(victim) == GetClientTeam(attacker))
+	{
+		return Plugin_Handled;
+	}
+	else if (0 < attacker <= MaxClients && inflictor > MaxClients && (g_iTeamID[inflictor] == 2 || damagetype == 134217792))
+	{
+		if (GetClientTeam(victim) == 2 && GetClientTeam(attacker) != 2)
+		{
+			if (damagetype == 134217792)
+			{
+				char sClassname[5];
+				GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
+				if (StrEqual(sClassname, "pipe"))
+				{
+					return Plugin_Handled;
+				}
+			}
+			else
+			{
+				return Plugin_Handled;
+			}
+		}
+	}
+	else if (attacker == inflictor && inflictor > MaxClients && (g_iTeamID[inflictor] == 2 || damagetype == 134217792) && GetClientTeam(victim) == 2)
+	{
+		if (damagetype == 134217792)
+		{
+			char sClassname[5];
+			GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
+			if (StrEqual(sClassname, "pipe"))
+			{
+				return Plugin_Handled;
+			}
+		}
+		else
+		{
+			attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
+			if (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker])))
+			{
+				return Plugin_Handled;
+			}
+		}
+	}
+
+	return Plugin_Continue;
+}
+
+public void vGameMode(const char[] output, int caller, int activator, float delay)
+{
+	if (StrEqual(output, "OnCoop"))
+	{
+		g_iCurrentMode = 1;
+	}
+	else if (StrEqual(output, "OnVersus"))
+	{
+		g_iCurrentMode = 2;
+	}
+	else if (StrEqual(output, "OnSurvival"))
+	{
+		g_iCurrentMode = 4;
+	}
+	else if (StrEqual(output, "OnScavenge"))
+	{
+		g_iCurrentMode = 8;
+	}
+}
+
+static bool bIsPluginEnabled()
+{
+	if (g_cvNFFMPGameMode == null)
+	{
+		return false;
+	}
+
+	int iMode = g_cvNFFGameModeTypes.IntValue;
+	if (iMode != 0)
+	{
+		if (!g_bMapStarted)
+		{
+			return false;
+		}
+
+		g_iCurrentMode = 0;
+
+		int iGameMode = CreateEntityByName("info_gamemode");
+		if (IsValidEntity(iGameMode))
+		{
+			DispatchSpawn(iGameMode);
+
+			HookSingleEntityOutput(iGameMode, "OnCoop", vGameMode, true);
+			HookSingleEntityOutput(iGameMode, "OnSurvival", vGameMode, true);
+			HookSingleEntityOutput(iGameMode, "OnVersus", vGameMode, true);
+			HookSingleEntityOutput(iGameMode, "OnScavenge", vGameMode, true);
+
+			ActivateEntity(iGameMode);
+			AcceptEntityInput(iGameMode, "PostSpawnActivate");
+			RemoveEntity(iGameMode);
+		}
+
+		if (g_iCurrentMode == 0 || !(iMode & g_iCurrentMode))
 		{
 			return false;
 		}
 	}
-	g_cvNFFDisabledGameModes.GetString(sConVarModes, sizeof(sConVarModes));
-	if (strcmp(sConVarModes, ""))
+
+	char sFixed[32], sGameMode[32], sGameModes[513], sList[513];
+	g_cvNFFMPGameMode.GetString(sGameMode, sizeof(sGameMode));
+	FormatEx(sFixed, sizeof(sFixed), ",%s,", sGameMode);
+
+	g_cvNFFEnabledGameModes.GetString(sGameModes, sizeof(sGameModes));
+	if (sGameModes[0] != '\0')
 	{
-		Format(sConVarModes, sizeof(sConVarModes), ",%s,", sConVarModes);
-		if (StrContains(sConVarModes, sGameMode, false) != -1)
+		FormatEx(sList, sizeof(sList), ",%s,", sGameModes);
+		if (StrContains(sList, sFixed, false) == -1)
 		{
 			return false;
 		}
 	}
+
+	g_cvNFFDisabledGameModes.GetString(sGameModes, sizeof(sGameModes));
+	if (sGameModes[0] != '\0')
+	{
+		FormatEx(sList, sizeof(sList), ",%s,", sGameModes);
+		if (StrContains(sList, sFixed, false) != -1)
+		{
+			return false;
+		}
+	}
+
 	return true;
+}
+
+static bool bIsValidClient(int client)
+{
+	return 0 < client <= MaxClients && IsClientInGame(client) && !IsClientInKickQueue(client);
 }

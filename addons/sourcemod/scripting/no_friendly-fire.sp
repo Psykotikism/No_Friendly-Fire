@@ -107,7 +107,7 @@ public void OnMapEnded()
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	if (IsValidEntity(entity))
+	if (MaxClients < entity <= 2048)
 	{
 		g_iTeamID[entity] = 0;
 
@@ -151,7 +151,7 @@ public Action OnTakePropDamage(int victim, int &attacker, int &inflictor, float 
 	{
 		return Plugin_Continue;
 	}
-	else if (IsValidEntity(inflictor) && attacker == inflictor && g_iTeamID[inflictor] == 2)
+	else if (inflictor > MaxClients && attacker == inflictor && g_iTeamID[inflictor] == 2)
 	{
 		attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
 		if (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker])))

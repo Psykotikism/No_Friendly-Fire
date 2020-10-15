@@ -18,7 +18,7 @@ Just a simple plugin that disables friendly fire.
 The plugin stops players from damaging each other. It's useful for encouraging teamwork and discouraging teamkilling.
 
 ### Requirements
-No Friendly-Fire was developed against SourceMod 1.8+.
+SourceMod 1.8.X or higher.
 
 ### Installation
 1. Delete files from old versions of the plugin.
@@ -26,44 +26,62 @@ No Friendly-Fire was developed against SourceMod 1.8+.
 3. Place all the contents into their respective folders.
 4. If prompted to replace or merge anything, click yes.
 5. Load up the No Friendly-Fire.
-  - Type ```sm_rcon sm plugins load no_friendly-fire``` in console.
+  - Type `sm_rcon sm plugins load "no_friendly-fire"` in console.
   - OR restart the server.
 6. Customize No Friendly-Fire (Config file generated on first load).
 
 ### Uninstalling/Upgrading to Newer Versions
-1. Delete no_friendly-fire.smx from addons/sourcemod/plugins folder.
-2. Delete no_friendly-fire.sp from addons/sourcemod/scripting folder.
-3. Delete no_friendly-fire.cfg from cfg/sourcemod folder.
+1. Delete `no_friendly-fire.smx` from `addons/sourcemod/plugins` folder.
+2. Delete `no_friendly-fire.sp` from `addons/sourcemod/scripting` folder.
+3. Delete `no_friendly-fire.cfg` from `cfg/sourcemod` folder.
 4. Follow the Installation guide above. (Only for upgrading to newer versions.)
 
 ### Disabling
-1. Move no_friendly-fire.smx to plugins/disabled folder.
+1. Move `no_friendly-fire.smx` to `plugins/disabled` folder.
 2. Unload No Friendly-Fire.
-  - Type ```sm_rcon sm plugins unload no_friendly-fire``` in console.
+  - Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
   - OR restart the server.
 
 ## Configuration Variables (ConVars/CVars)
 ```
-// Disable the plugin in these game modes.
-// (Empty: None)
-// (Not empty: Disabled in these game modes, separated by commas with no spaces.)
+// Disable the No Friendly-Fire in these game modes.
+// Game mode limit: 64
+// Character limit for each game mode: 32
+// Empty: None
+// Not empty: Disabled in these game modes.
 // -
 // Default: ""
 nff_disabledgamemodes ""
 
 // Enable the plugin?
-// (0: OFF)
-// (1: ON)
+// 0: OFF
+// 1: ON
 // -
 // Default: "1"
+// Minimum: "0.000000"
+// Maximum: "1.000000"
 nff_enable "1"
 
-// Enable the plugin in these game modes.
-// (Empty: All)
-// (Not empty: Enabled in these game modes, separated by commas with no spaces.)
+// Enable the No Friendly-Fire in these game modes.
+// Game mode limit: 64
+// Character limit for each game mode: 32
+// Empty: None
+// Not empty: Enabled in these game modes.
 // -
 // Default: ""
 nff_enabledgamemodes ""
+
+// Enable the No Friendly-Fire in these game mode types.
+// 0 OR 15: ALL
+// 1: Co-op
+// 2: Versus
+// 3: Survival
+// 4: Scavenge
+// -
+// Default: "0"
+// Minimum: "0.000000"
+// Maximum: "15.000000"
+nff_gamemodetypes "0"
 ```
 
 ## Questions You May Have
@@ -100,7 +118,7 @@ Outcome: The plugin works only in Versus mode.
 ## Credits
 cravenge - For the old source code; fixing all the errors and converting the original source code into the new syntax in this [post](https://forums.alliedmods.net/showthread.php?t=301873). Also for adding an entity reference check to the fire thrown by a player that either switches teams or disconnects.
 Lux - For the new source code; showed me a better and simpler way of handling friendly fire.
-Silvers (Silvershot) - For the code that allows users to enable/disable the plugin in certain game modes.
+Silvers (Silvershot) - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
 
 # Contact Me
 If you wish to contact me for any questions, concerns, suggestions, or criticism, I can be found here:

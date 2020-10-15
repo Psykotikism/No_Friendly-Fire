@@ -89,7 +89,7 @@ nff_gamemodetypes "0"
 
 1. How do I enable/disable the plugin in certain game modes?
 
-You must specify the game modes in the nff_enabledgamemodes and nff_disabledgamemodes convars.
+You must specify the game modes in the `nff_enabledgamemodes` and `nff_disabledgamemodes` convars.
 
 Here are some scenarios and their outcomes:
 

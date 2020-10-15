@@ -116,9 +116,9 @@ Outcome: The plugin works only in Versus mode.
 ```
 
 ## Credits
-cravenge - For the old source code; fixing all the errors and converting the original source code into the new syntax in this [post](https://forums.alliedmods.net/showthread.php?t=301873). Also for adding an entity reference check to the fire thrown by a player that either switches teams or disconnects.
-Lux - For the new source code; showed me a better and simpler way of handling friendly fire.
-Silvers (Silvershot) - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
+**cravenge** - For the old source code; fixing all the errors and converting the original source code into the new syntax in this [post](https://forums.alliedmods.net/showthread.php?t=301873). Also for adding an entity reference check to the fire thrown by a player that either switches teams or disconnects.
+**Lux** - For the new source code; showed me a better and simpler way of handling friendly fire.
+**Silvers** - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
 
 # Contact Me
 If you wish to contact me for any questions, concerns, suggestions, or criticism, I can be found here:

@@ -157,20 +157,17 @@ public Action OnTakePropDamage(int victim, int &attacker, int &inflictor, float 
 	{
 		return Plugin_Continue;
 	}
-	else if (inflictor > MaxClients && attacker == inflictor && ((g_cvNFFSurvivors.BoolValue && g_iTeamID[inflictor] == 2) || (g_cvNFFInfected.BoolValue && g_iTeamID[inflictor] == 3)))
+	else if (g_cvNFFSurvivors.BoolValue && inflictor > MaxClients && attacker == inflictor && g_iTeamID[inflictor] == 2)
 	{
 		attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
-		if (bIsDamageTypeBlocked(inflictor, true) && (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker]))))
+		if (bIsDamageTypeBlocked(inflictor, damagetype) && (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker]))))
 		{
 			return Plugin_Handled;
 		}
 	}
-	else if (0 < attacker <= MaxClients)
+	else if (g_cvNFFSurvivors.BoolValue && 0 < attacker <= MaxClients)
 	{
-		static bool bBlockSurvivor, bBlockInfected;
-		bBlockSurvivor = g_cvNFFSurvivors.BoolValue && g_iTeamID[inflictor] == 2 && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker] || GetClientTeam(attacker) != 2);
-		bBlockInfected = g_cvNFFInfected.BoolValue && g_iTeamID[inflictor] == 3 && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker] || GetClientTeam(attacker) != 3);
-		if (bIsDamageTypeBlocked(inflictor, true) && (bBlockSurvivor || bBlockInfected))
+		if (bIsDamageTypeBlocked(inflictor, damagetype) && g_iTeamID[inflictor] == 2 && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker] || GetClientTeam(attacker) != 2))
 		{
 			return Plugin_Handled;
 		}
@@ -185,61 +182,49 @@ public Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, floa
 	{
 		return Plugin_Continue;
 	}
-	else if (bIsValidClient(victim) && bIsValidClient(attacker) && bIsDamageTypeBlocked(0, false, damagetype))
+	else if (bIsValidClient(victim) && bIsValidClient(attacker) && GetClientTeam(victim) == GetClientTeam(attacker))
 	{
-		static bool bBlockSurvivor, bBlockInfected;
-		bBlockSurvivor = g_cvNFFSurvivors.BoolValue && GetClientTeam(victim) == 2 && GetClientTeam(attacker) == 2;
-		bBlockInfected = g_cvNFFInfected.BoolValue && GetClientTeam(victim) == 3 && GetClientTeam(attacker) == 3;
-		if (bBlockSurvivor || bBlockInfected)
+		if (bIsDamageTypeBlocked(inflictor, damagetype) && (g_cvNFFSurvivors.BoolValue && GetClientTeam(victim) == 2 && GetClientTeam(attacker) == 2) || (g_cvNFFInfected.BoolValue && GetClientTeam(victim) == 3 && GetClientTeam(attacker) == 3))
 		{
 			return Plugin_Handled;
 		}
 	}
-	else if (0 < attacker <= MaxClients && inflictor > MaxClients && (g_iTeamID[inflictor] == 2 || g_iTeamID[inflictor] == 3 || damagetype == 134217792))
+	else if (g_cvNFFSurvivors.BoolValue && 0 < attacker <= MaxClients && inflictor > MaxClients && (g_iTeamID[inflictor] == 2 || damagetype == 134217792))
 	{
-		static bool bBlockSurvivor, bBlockInfected;
-		bBlockSurvivor = g_cvNFFSurvivors.BoolValue && GetClientTeam(victim) == 2 && GetClientTeam(attacker) != 2;
-		bBlockInfected = g_cvNFFInfected.BoolValue && GetClientTeam(victim) == 3 && GetClientTeam(attacker) != 3;
-		if (bBlockSurvivor || bBlockInfected)
+		if (GetClientTeam(victim) == 2 && GetClientTeam(attacker) != 2)
 		{
 			if (damagetype == 134217792)
 			{
 				char sClassname[5];
 				GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
-				if (StrEqual(sClassname, "pipe") && bIsDamageTypeBlocked(inflictor, false, damagetype))
+				if (StrEqual(sClassname, "pipe") && bIsDamageTypeBlocked(inflictor, damagetype))
 				{
 					return Plugin_Handled;
 				}
 			}
-			else if (bIsDamageTypeBlocked(inflictor, false, damagetype))
+			else if (bIsDamageTypeBlocked(inflictor, damagetype))
 			{
 				return Plugin_Handled;
 			}
 		}
 	}
-	else if (attacker == inflictor && inflictor > MaxClients)
+	else if (g_cvNFFSurvivors.BoolValue && attacker == inflictor && inflictor > MaxClients && (g_iTeamID[inflictor] == 2 || damagetype == 134217792) && GetClientTeam(victim) == 2)
 	{
-		static bool bBlockSurvivor, bBlockInfected;
-		bBlockSurvivor = g_cvNFFSurvivors.BoolValue && (g_iTeamID[inflictor] == 2 || damagetype == 134217792) && GetClientTeam(victim) == 2;
-		bBlockInfected = g_cvNFFInfected.BoolValue && (g_iTeamID[inflictor] == 3 || damagetype == 134217792) && GetClientTeam(victim) == 3;
-		if (bBlockSurvivor || bBlockInfected)
+		if (damagetype == 134217792)
 		{
-			if (damagetype == 134217792)
+			char sClassname[5];
+			GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
+			if (StrEqual(sClassname, "pipe") && bIsDamageTypeBlocked(inflictor, damagetype))
 			{
-				char sClassname[5];
-				GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
-				if (StrEqual(sClassname, "pipe") && bIsDamageTypeBlocked(inflictor, false, damagetype))
-				{
-					return Plugin_Handled;
-				}
+				return Plugin_Handled;
 			}
-			else
+		}
+		else
+		{
+			attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
+			if (bIsDamageTypeBlocked(inflictor, damagetype) && (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker]))))
 			{
-				attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
-				if (bIsDamageTypeBlocked(inflictor, false, damagetype) && (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker]))))
-				{
-					return Plugin_Handled;
-				}
+				return Plugin_Handled;
 			}
 		}
 	}
@@ -267,28 +252,20 @@ public void vGameMode(const char[] output, int caller, int activator, float dela
 	}
 }
 
-static bool bIsDamageTypeBlocked(int entity, bool mode, int damagetype = 0)
+static bool bIsDamageTypeBlocked(int entity, int damagetype = 0)
 {
-	switch (mode)
+	static char sModel[64];
+	GetEntPropString(entity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
+	if ((!g_cvNFFBlockExplosions.BoolValue && (StrEqual(sModel, MODEL_OXYGEN) || StrEqual(sModel, MODEL_PROPANE))) || (!g_cvNFFBlockFires.BoolValue && (StrEqual(sModel, MODEL_GASCAN) || (g_bLeft4Dead2 && StrEqual(sModel, MODEL_FIREWORK)))))
 	{
-		case true:
-		{
-			static char sModel[64];
-			GetEntPropString(entity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
-			if ((!g_cvNFFBlockExplosions.BoolValue && (StrEqual(sModel, MODEL_OXYGEN) || StrEqual(sModel, MODEL_PROPANE))) || (!g_cvNFFBlockFires.BoolValue && (StrEqual(sModel, MODEL_GASCAN) || (g_bLeft4Dead2 && StrEqual(sModel, MODEL_FIREWORK)))))
-			{
-				return false;
-			}
-		}
-		case false:
-		{
-			if ((!g_cvNFFBlockExplosions.BoolValue && ((damagetype & DMG_BLAST) || (damagetype & DMG_BLAST_SURFACE) || (damagetype & DMG_AIRBOAT) || (damagetype & DMG_PLASMA)))
-				|| (!g_cvNFFBlockFires.BoolValue && (damagetype & DMG_BURN)) || (!g_cvNFFBlockGuns.BoolValue && (damagetype & DMG_BULLET))
-				|| (!g_cvNFFBlockMelee.BoolValue && ((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB))))
-			{
-				return false;
-			}
-		}
+		return false;
+	}
+
+	if ((!g_cvNFFBlockExplosions.BoolValue && ((damagetype & DMG_BLAST) || (damagetype & DMG_BLAST_SURFACE) || (damagetype & DMG_AIRBOAT) || (damagetype & DMG_PLASMA)))
+		|| (!g_cvNFFBlockFires.BoolValue && (damagetype & DMG_BURN)) || (!g_cvNFFBlockGuns.BoolValue && (damagetype & DMG_BULLET))
+		|| (!g_cvNFFBlockMelee.BoolValue && ((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB))))
+	{
+		return false;
 	}
 
 	return true;

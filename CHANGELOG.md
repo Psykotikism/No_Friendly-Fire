@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 7.5 (October 25, 2020)
+
+1. Changes:
+
+- Added multiple settings to determine which damage types to block and which teams to block friendly-fire for.
+
 ## Version 7.0 (October 14, 2020)
 
 1. Changes:

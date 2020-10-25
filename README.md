@@ -44,6 +44,42 @@ SourceMod 1.8.X or higher.
 
 ## Configuration Variables (ConVars/CVars)
 ```
+// Block explosive damage?
+// 0: OFF
+// 1: ON
+// -
+// Default: "1"
+// Minimum: "0.000000"
+// Maximum: "1.000000"
+nff_blockexplosions "1"
+
+// Block fire damage?
+// 0: OFF
+// 1: ON
+// -
+// Default: "1"
+// Minimum: "0.000000"
+// Maximum: "1.000000"
+nff_blockfires "1"
+
+// Block bullet damage?
+// 0: OFF
+// 1: ON
+// -
+// Default: "1"
+// Minimum: "0.000000"
+// Maximum: "1.000000"
+nff_blockguns "1"
+
+// Block melee damage?
+// 0: OFF
+// 1: ON
+// -
+// Default: "1"
+// Minimum: "0.000000"
+// Maximum: "1.000000"
+nff_blockmelee "1"
+
 // Disable the No Friendly-Fire in these game modes.
 // Game mode limit: 64
 // Character limit for each game mode: 32
@@ -82,6 +118,24 @@ nff_enabledgamemodes ""
 // Minimum: "0.000000"
 // Maximum: "15.000000"
 nff_gamemodetypes "0"
+
+// Disable Infected team friendly-fire?
+// 0: OFF
+// 1: ON
+// -
+// Default: "1"
+// Minimum: "0.000000"
+// Maximum: "1.000000"
+nff_infected "1"
+
+// Disable Survivors team friendly-fire?
+// 0: OFF
+// 1: ON
+// -
+// Default: "1"
+// Minimum: "0.000000"
+// Maximum: "1.000000"
+nff_survivors "1"
 ```
 
 ## Questions You May Have
@@ -95,40 +149,48 @@ Here are some scenarios and their outcomes:
 
 - Scenario 1
 ```
+nff_gamemodetypes "0" // The plugin is enabled in all game mode types.
 nff_enabledgamemodes "" // The plugin is enabled in all game modes.
-nff_disabledgamemodes "coop" // The plugin is disabled in Campaign mode.
+nff_disabledgamemodes "coop" // The plugin is disabled in "coop" mode.
 
-Outcome: The plugin works in every game mode except in Campaign mode.
+Outcome: The plugin works in every game mode except "coop" mode.
 ```
 - Scenario 2
 ```
-nff_enabledgamemodes "coop" // The plugin is enabled in only Campaign mode.
-nff_disabledgamemodes "" // The plugin is not disabled at all.
+nff_gamemodetypes "1" // The plugin is enabled in every Campaign-based game mode.
+nff_enabledgamemodes "coop" // The plugin is enabled in only "coop" mode.
+nff_disabledgamemodes "" // The plugin is not disabled in any game modes.
 
-Outcome: The plugin works only in Campaign mode.
+Outcome: The plugin works only in "coop" mode.
 ```
 - Scenario 3
 ```
-nff_enabledgamemodes "coop,versus" // The plugin is enabled in only Campaign and Versus modes.
-nff_disabledgamemodes "coop" // The plugin is disabled in Campaign mode.
+nff_gamemodetypes "5" // The plugin is enabled in every Campaign-based and Survival-based game mode.
+nff_enabledgamemodes "coop,versus" // The plugin is enabled in only "coop" and "versus" mode.
+nff_disabledgamemodes "coop" // The plugin is disabled in "coop" mode.
 
-Outcome: The plugin works only in Versus mode.
+Outcome: The plugin works only in "coop" mode.
 ```
 
 ## Credits
-**cravenge** - For the old source code; fixing all the errors and converting the original source code into the new syntax in this [post](https://forums.alliedmods.net/showthread.php?t=301873). Also for adding an entity reference check to the fire thrown by a player that either switches teams or disconnects.
-**Lux** - For the new source code; showed me a better and simpler way of handling friendly fire.
-**Silvers** - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
+**cravenge** - For the original source code; fixing all the errors and converting the original source code into the new syntax in this [post](https://forums.alliedmods.net/showthread.php?t=301873).
+
+**Lux** - For the previous source code; showed me a better and simpler way of handling friendly fire.
+
+**Silvers (Silvershot)** - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
 
 # Contact Me
 If you wish to contact me for any questions, concerns, suggestions, or criticism, I can be found here:
-- [AlliedModders Forum](https://forums.alliedmods.net/member.php?u=181166)
-- [Steam](https://steamcommunity.com/profiles/76561198056665335)
+- [AlliedModders Forum](https://forums.alliedmods.net/member.php?u=181166) (Use this for just reporting bugs/issues or giving suggestions/ideas.)
+- [Steam](https://steamcommunity.com/profiles/76561198056665335) (Use this for getting to know me or wanting to be friends with me.)
+- Psyk0tik#6898 on Discord (Use this for pitching in new/better code.)
 
 # 3rd-Party Revisions Notice
 If you would like to share your own revisions of this plugin, please rename the files! I do not want to create confusion for end-users and it will avoid conflict and negative feedback on the official versions of my work. If you choose to keep the same file names for your revisions, it will cause users to assume that the official versions are the source of any problems your revisions may have. This is to protect you (the reviser) and me (the developer)! Thank you!
 
-# Donate
+# Donate (PayPal only)
 - [Donate to SourceMod](https://www.sourcemod.net/donate.php)
+- Donate to me at alfred_llagas3637@yahoo.com
+
 
 Thank you very much! :)

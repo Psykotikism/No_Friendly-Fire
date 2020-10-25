@@ -18,7 +18,7 @@ Just a simple plugin that disables friendly fire.
 The plugin stops players from damaging each other. It's useful for encouraging teamwork and discouraging teamkilling.
 
 ### Requirements
-SourceMod 1.8.X or higher.
+SourceMod 1.9.X or higher
 
 ### Installation
 1. Delete files from old versions of the plugin.

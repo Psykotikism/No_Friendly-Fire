@@ -81,7 +81,7 @@ nff_blockguns "1"
 nff_blockmelee "1"
 
 // Disable the No Friendly-Fire in these game modes.
-// Game mode limit: 64
+// Game mode limit: 16
 // Character limit for each game mode: 32
 // Empty: None
 // Not empty: Disabled in these game modes.
@@ -99,7 +99,7 @@ nff_disabledgamemodes ""
 nff_enable "1"
 
 // Enable the No Friendly-Fire in these game modes.
-// Game mode limit: 64
+// Game mode limit: 16
 // Character limit for each game mode: 32
 // Empty: None
 // Not empty: Enabled in these game modes.

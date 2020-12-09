@@ -128,6 +128,15 @@ nff_gamemodetypes "0"
 // Maximum: "1.000000"
 nff_infected "1"
 
+// Only block friendly-fire when all survivors are still inside the saferoom.
+// 0: OFF
+// 1: ON
+// -
+// Default: "0"
+// Minimum: "0.000000"
+// Maximum: "1.000000"
+nff_saferoomonly "0"
+
 // Disable Survivors team friendly-fire?
 // 0: OFF
 // 1: ON

@@ -2,10 +2,14 @@
 #include <sdkhooks>
 #include <sdktools>
 
+#undef REQUIRE_PLUGIN
+#tryinclude <left4dhooks>
+#define REQUIRE_PLUGIN
+
 #pragma semicolon 1
 #pragma newdecls required
 
-#define NFF_VERSION "7.5"
+#define NFF_VERSION "8.0"
 
 public Plugin myinfo =
 {
@@ -46,11 +50,32 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 #define MODEL_OXYGEN "models/props_equipment/oxygentank01.mdl"
 #define MODEL_PROPANE "models/props_junk/propanecanister001a.mdl"
 
-bool g_bMapStarted;
+bool g_bLeft4DHooks, g_bMapStarted;
 
-ConVar g_cvNFFBlockExplosions, g_cvNFFBlockFires, g_cvNFFBlockGuns, g_cvNFFBlockMelee, g_cvNFFDisabledGameModes, g_cvNFFEnable, g_cvNFFEnabledGameModes, g_cvNFFGameModeTypes, g_cvNFFInfected, g_cvNFFMPGameMode, g_cvNFFSurvivors;
+ConVar g_cvNFFBlockExplosions, g_cvNFFBlockFires, g_cvNFFBlockGuns, g_cvNFFBlockMelee, g_cvNFFDisabledGameModes, g_cvNFFEnable, g_cvNFFEnabledGameModes, g_cvNFFGameModeTypes, g_cvNFFInfected, g_cvNFFMPGameMode, g_cvNFFSaferoomOnly, g_cvNFFSurvivors;
 
 int g_iCurrentMode, g_iTeamID[2048], g_iUserID[MAXPLAYERS + 1];
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "left4dhooks", false))
+	{
+		g_bLeft4DHooks = true;
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "left4dhooks", false))
+	{
+		g_bLeft4DHooks = false;
+	}
+}
+
+public void OnAllPluginsLoaded()
+{
+	g_bLeft4DHooks = LibraryExists("left4dhooks");
+}
 
 public void OnPluginStart()
 {
@@ -64,6 +89,7 @@ public void OnPluginStart()
 	g_cvNFFGameModeTypes = CreateConVar("nff_gamemodetypes", "0", "Enable the No Friendly-Fire in these game mode types.\n0 OR 15: ALL\n1: Co-op\n2: Versus\n3: Survival\n4: Scavenge", _, true, 0.0, true, 15.0);
 	g_cvNFFInfected = CreateConVar("nff_infected", "1", "Disable Infected team friendly-fire?\n0: OFF\n1: ON", _, true, 0.0, true, 1.0);
 	g_cvNFFMPGameMode = FindConVar("mp_gamemode");
+	g_cvNFFSaferoomOnly = CreateConVar("nff_saferoomonly", "0", "Only block friendly-fire when all survivors are still inside the saferoom.\n0: OFF\n1: ON", _, true, 0.0, true, 1.0);
 	g_cvNFFSurvivors = CreateConVar("nff_survivors", "1", "Disable Survivors team friendly-fire?\n0: OFF\n1: ON", _, true, 0.0, true, 1.0);
 	CreateConVar("nff_pluginversion", NFF_VERSION, "No Friendly Fire version", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
@@ -79,8 +105,8 @@ public void OnPluginStart()
 			}
 		}
 
-		int iProp = -1;
 		char sModel[64];
+		int iProp = -1;
 		while ((iProp = FindEntityByClassname(iProp, "prop_physics") != INVALID_ENT_REFERENCE))
 		{
 			GetEntPropString(iProp, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
@@ -153,7 +179,7 @@ static void OnSpawnProp(int entity)
 
 public Action OnTakePropDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	if (!g_cvNFFEnable.BoolValue || !bIsPluginEnabled())
+	if (!g_cvNFFEnable.BoolValue || !bIsPluginEnabled() || (g_bLeft4DHooks && g_cvNFFSaferoomOnly.BoolValue && L4D_HasAnySurvivorLeftSafeArea()))
 	{
 		return Plugin_Continue;
 	}
@@ -178,7 +204,7 @@ public Action OnTakePropDamage(int victim, int &attacker, int &inflictor, float 
 
 public Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	if (!g_cvNFFEnable.BoolValue || !bIsPluginEnabled())
+	if (!g_cvNFFEnable.BoolValue || !bIsPluginEnabled() || (g_bLeft4DHooks && g_cvNFFSaferoomOnly.BoolValue && L4D_HasAnySurvivorLeftSafeArea()))
 	{
 		return Plugin_Continue;
 	}
@@ -189,18 +215,15 @@ public Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, floa
 			return Plugin_Handled;
 		}
 	}
-	else if (g_cvNFFSurvivors.BoolValue && 0 < attacker <= MaxClients && inflictor > MaxClients && (g_iTeamID[inflictor] == 2 || damagetype == 134217792))
+	else if (g_cvNFFSurvivors.BoolValue && 0 < attacker <= MaxClients && inflictor > MaxClients && g_iTeamID[inflictor] == 2)
 	{
 		if (GetClientTeam(victim) == 2 && GetClientTeam(attacker) != 2)
 		{
-			if (damagetype == 134217792)
+			char sClassname[5];
+			GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
+			if (StrEqual(sClassname, "pipe") && damagetype == 134217792 && bIsDamageTypeBlocked(inflictor, damagetype))
 			{
-				char sClassname[5];
-				GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
-				if (StrEqual(sClassname, "pipe") && bIsDamageTypeBlocked(inflictor, damagetype))
-				{
-					return Plugin_Handled;
-				}
+				return Plugin_Handled;
 			}
 			else if (bIsDamageTypeBlocked(inflictor, damagetype))
 			{
@@ -208,16 +231,13 @@ public Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, floa
 			}
 		}
 	}
-	else if (g_cvNFFSurvivors.BoolValue && attacker == inflictor && inflictor > MaxClients && (g_iTeamID[inflictor] == 2 || damagetype == 134217792) && GetClientTeam(victim) == 2)
+	else if (g_cvNFFSurvivors.BoolValue && attacker == inflictor && inflictor > MaxClients && g_iTeamID[inflictor] == 2 && GetClientTeam(victim) == 2)
 	{
-		if (damagetype == 134217792)
+		char sClassname[5];
+		GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
+		if (StrEqual(sClassname, "pipe") && damagetype == 134217792 && bIsDamageTypeBlocked(inflictor, damagetype))
 		{
-			char sClassname[5];
-			GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
-			if (StrEqual(sClassname, "pipe") && bIsDamageTypeBlocked(inflictor, damagetype))
-			{
-				return Plugin_Handled;
-			}
+			return Plugin_Handled;
 		}
 		else
 		{
@@ -300,7 +320,11 @@ static bool bIsPluginEnabled()
 
 			ActivateEntity(iGameMode);
 			AcceptEntityInput(iGameMode, "PostSpawnActivate");
-			RemoveEntity(iGameMode);
+
+			if (IsValidEntity(iGameMode))
+			{
+				RemoveEdict(iGameMode);
+			}
 		}
 
 		if (g_iCurrentMode == 0 || !(iMode & g_iCurrentMode))

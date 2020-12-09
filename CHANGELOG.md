@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 8.0 (December 9, 2020)
+
+1. Bug fixes:
+
+- Fixed damage from infected to survivors being blocked due to team check even if attacker was never on survivor team.
+
+2. Changes:
+
+- Added the `nff_saferoomonly` convar. (Requested by lunatixxx.)
+
 ## Version 7.5 (October 25, 2020)
 
 1. Changes:

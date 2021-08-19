@@ -1,4 +1,9 @@
 # No Friendly-Fire
+
+## PayPal
+[Donate to my PayPal if you appreciate my work](https://paypal.me/Psyk0tikism?locale.x=en_US)
+
+## Introduction
 I've had this plugin for a few months now. I figured I'd just share it with you guys since most (if not all) of the friendly fire plugins I see for L4D and L4D2 either don't (fully) work anymore or don't do what they were originally meant to do.
 
 ## License

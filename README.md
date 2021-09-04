@@ -31,8 +31,8 @@ SourceMod 1.9.X or higher
 3. Place all the contents into their respective folders.
 4. If prompted to replace or merge anything, click yes.
 5. Load up the No Friendly-Fire.
-  - Type `sm_rcon sm plugins load "no_friendly-fire"` in console.
-  - OR restart the server.
+	- Type `sm_rcon sm plugins load "no_friendly-fire"` in console.
+	- OR restart the server.
 6. Customize No Friendly-Fire (Config file generated on first load).
 
 ### Uninstalling/Upgrading to Newer Versions
@@ -44,8 +44,8 @@ SourceMod 1.9.X or higher
 ### Disabling
 1. Move `no_friendly-fire.smx` to `plugins/disabled` folder.
 2. Unload No Friendly-Fire.
-  - Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
-  - OR restart the server.
+	- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
+	- OR restart the server.
 
 ## Configuration Variables (ConVars/CVars)
 ```
@@ -193,18 +193,13 @@ Outcome: The plugin works only in "coop" mode.
 
 **Silvers (Silvershot)** - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
 
+**Kr3m** - For reporting an issue.
+
 # Contact Me
 If you wish to contact me for any questions, concerns, suggestions, or criticism, I can be found here:
 - [AlliedModders Forum](https://forums.alliedmods.net/member.php?u=181166) (Use this for just reporting bugs/issues or giving suggestions/ideas.)
 - [Steam](https://steamcommunity.com/profiles/76561198056665335) (Use this for getting to know me or wanting to be friends with me.)
-- Psyk0tik#6898 on Discord (Use this for pitching in new/better code.)
+- `Psyk0tik#6898` on Discord (Use this for pitching in new/better code.)
 
 # 3rd-Party Revisions Notice
 If you would like to share your own revisions of this plugin, please rename the files! I do not want to create confusion for end-users and it will avoid conflict and negative feedback on the official versions of my work. If you choose to keep the same file names for your revisions, it will cause users to assume that the official versions are the source of any problems your revisions may have. This is to protect you (the reviser) and me (the developer)! Thank you!
-
-# Donate (PayPal only)
-- [Donate to SourceMod](https://www.sourcemod.net/donate.php)
-- Donate to me at alfred_llagas3637@yahoo.com
-
-
-Thank you very much! :)

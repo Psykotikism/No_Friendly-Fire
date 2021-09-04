@@ -9,7 +9,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define NFF_VERSION "8.0"
+#define NFF_VERSION "8.5"
 
 public Plugin myinfo =
 {
@@ -107,12 +107,15 @@ public void OnPluginStart()
 
 		char sModel[64];
 		int iProp = -1;
-		while ((iProp = FindEntityByClassname(iProp, "prop_physics") != INVALID_ENT_REFERENCE))
+		while ((iProp = FindEntityByClassname(iProp, "prop_physics")) != INVALID_ENT_REFERENCE)
 		{
-			GetEntPropString(iProp, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
-			if (StrEqual(sModel, MODEL_OXYGEN) || StrEqual(sModel, MODEL_PROPANE) || StrEqual(sModel, MODEL_GASCAN) || (g_bLeft4Dead2 && StrEqual(sModel, MODEL_FIREWORK)))
+			if (IsValidEntity(iProp))
 			{
-				SDKHook(iProp, SDKHook_OnTakeDamage, OnTakePropDamage);
+				GetEntPropString(iProp, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
+				if (StrEqual(sModel, MODEL_OXYGEN) || StrEqual(sModel, MODEL_PROPANE) || StrEqual(sModel, MODEL_GASCAN) || (g_bLeft4Dead2 && StrEqual(sModel, MODEL_FIREWORK)))
+				{
+					SDKHook(iProp, SDKHook_OnTakeDamage, OnTakePropDamage);
+				}
 			}
 		}
 
@@ -183,17 +186,31 @@ public Action OnTakePropDamage(int victim, int &attacker, int &inflictor, float 
 	{
 		return Plugin_Continue;
 	}
-	else if (g_cvNFFSurvivors.BoolValue && inflictor > MaxClients && attacker == inflictor && g_iTeamID[inflictor] == 2)
+	else if (g_cvNFFSurvivors.BoolValue)
 	{
-		attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
-		if (bIsDamageTypeBlocked(inflictor, damagetype) && (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker]))))
+		if (inflictor > MaxClients)
 		{
-			return Plugin_Handled;
+			if (attacker == inflictor && g_iTeamID[inflictor] == 2)
+			{
+				attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
+				if (bIsDamageTypeBlocked(inflictor, damagetype) && (attacker == -1 || (0 < attacker <= MaxClients && ((bIsValidClient(victim) && GetClientTeam(victim) == GetClientTeam(attacker)) || !IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker]))))
+				{
+					return Plugin_Handled;
+				}
+			}
+			else if (victim > MaxClients)
+			{
+				attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
+				if (bIsValidClient(attacker))
+				{
+					g_iTeamID[victim] = GetClientTeam(attacker);
+					SetEntPropEnt(victim, Prop_Send, "m_hOwnerEntity", attacker);
+					SetEntPropEnt(victim, Prop_Data, "m_hPhysicsAttacker", attacker);
+					SetEntPropFloat(victim, Prop_Data, "m_flLastPhysicsInfluenceTime", GetGameTime());
+				}
+			}
 		}
-	}
-	else if (g_cvNFFSurvivors.BoolValue && 0 < attacker <= MaxClients)
-	{
-		if (bIsDamageTypeBlocked(inflictor, damagetype) && g_iTeamID[inflictor] == 2 && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker] || GetClientTeam(attacker) != 2))
+		else if (0 < attacker <= MaxClients && bIsDamageTypeBlocked(inflictor, damagetype) && g_iTeamID[inflictor] == 2 && ((bIsValidClient(victim) && GetClientTeam(victim) == GetClientTeam(attacker)) || !IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker] || GetClientTeam(attacker) != 2))
 		{
 			return Plugin_Handled;
 		}
@@ -215,9 +232,23 @@ public Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, floa
 			return Plugin_Handled;
 		}
 	}
-	else if (g_cvNFFSurvivors.BoolValue && 0 < attacker <= MaxClients && inflictor > MaxClients && g_iTeamID[inflictor] == 2)
+	else if (g_cvNFFSurvivors.BoolValue)
 	{
-		if (GetClientTeam(victim) == 2 && GetClientTeam(attacker) != 2)
+		if (0 < attacker <= MaxClients && inflictor > MaxClients && g_iTeamID[inflictor] == 2 && GetClientTeam(victim) == 2 && GetClientTeam(attacker) != 2)
+		{
+			if (bIsDamageTypeBlocked(inflictor, damagetype))
+			{
+				char sClassname[5];
+				GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
+				if (StrEqual(sClassname, "pipe") && damagetype == 134217792)
+				{
+					return Plugin_Handled;
+				}
+
+				return Plugin_Handled;
+			}
+		}
+		else if (attacker == inflictor && inflictor > MaxClients && g_iTeamID[inflictor] == 2 && GetClientTeam(victim) == 2)
 		{
 			char sClassname[5];
 			GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
@@ -225,26 +256,13 @@ public Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, floa
 			{
 				return Plugin_Handled;
 			}
-			else if (bIsDamageTypeBlocked(inflictor, damagetype))
+			else
 			{
-				return Plugin_Handled;
-			}
-		}
-	}
-	else if (g_cvNFFSurvivors.BoolValue && attacker == inflictor && inflictor > MaxClients && g_iTeamID[inflictor] == 2 && GetClientTeam(victim) == 2)
-	{
-		char sClassname[5];
-		GetEntityClassname(inflictor, sClassname, sizeof(sClassname));
-		if (StrEqual(sClassname, "pipe") && damagetype == 134217792 && bIsDamageTypeBlocked(inflictor, damagetype))
-		{
-			return Plugin_Handled;
-		}
-		else
-		{
-			attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
-			if (bIsDamageTypeBlocked(inflictor, damagetype) && (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker]))))
-			{
-				return Plugin_Handled;
+				attacker = GetEntPropEnt(inflictor, Prop_Send, "m_hOwnerEntity");
+				if (bIsDamageTypeBlocked(inflictor, damagetype) && (attacker == -1 || (0 < attacker <= MaxClients && (!IsClientInGame(attacker) || GetClientUserId(attacker) != g_iUserID[attacker]))))
+				{
+					return Plugin_Handled;
+				}
 			}
 		}
 	}

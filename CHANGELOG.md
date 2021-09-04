@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 8.5 (September 3, 2021)
+
+1. Bug fixes:
+
+- Fixed late-load error regarding invalid entities. (Thanks to `Kr3m` for reporting!)
+
+2. Changes:
+
+- Improved logic to catch possible exploits with gascan friendly-fire.
+
 ## Version 8.0 (December 9, 2020)
 
 1. Bug fixes:
@@ -8,7 +18,7 @@
 
 2. Changes:
 
-- Added the `nff_saferoomonly` convar. (Requested by lunatixxx.)
+- Added the `nff_saferoomonly` convar. (Requested by `lunatixxx`.)
 
 ## Version 7.5 (October 25, 2020)
 
@@ -21,9 +31,9 @@
 1. Changes:
 
 - No longer relies on convars to block friendly-fire.
-- Fire damage is now blocked without blocking all fires. (Thanks to Silvers for the code!)
-- Blocked idle/spectator team change and player disconnect exploits. (Thanks to Silvers for the code!)
-- Added the `nff_gamemodetypes` convar. (Thanks to Silvers for the code!)
+- Fire damage is now blocked without blocking all fires. (Thanks to `Silvers` for the code!)
+- Blocked idle/spectator team change and player disconnect exploits. (Thanks to `Silvers` for the code!)
+- Added the `nff_gamemodetypes` convar. (Thanks to `Silvers` for the code!)
 
 ## Version 6.5 (June 21, 2018)
 
@@ -52,7 +62,7 @@
 
 1. Added support for other game modes.
 2. Code optimization.
-3. Renamed the source code and .cfg files.
+3. Renamed the source code and `.cfg` files.
 
 ## Version 3.0 (December 8, 2017)
 

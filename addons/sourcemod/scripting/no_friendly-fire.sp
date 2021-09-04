@@ -72,11 +72,6 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnAllPluginsLoaded()
-{
-	g_bLeft4DHooks = LibraryExists("left4dhooks");
-}
-
 public void OnPluginStart()
 {
 	g_cvNFFBlockExplosions = CreateConVar("nff_blockexplosions", "1", "Block explosive damage?\n0: OFF\n1: ON", _, true, 0.0, true, 1.0);

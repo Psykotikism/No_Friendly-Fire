@@ -8,7 +8,7 @@ I've had this plugin for a few months now. I figured I'd just share it with you 
 
 ## License
 No Friendly-Fire: a L4D/L4D2 SourceMod Plugin
-Copyright (C) 2017  Alfred "Crasher_3637/Psyk0tik" Llagas
+Copyright (C) 2017  Alfred "Psyk0tik" Llagas
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 

@@ -21,6 +21,7 @@ Disables friendly fire.
 
 ## Requirements
 1. `SourceMod 1.9` or higher
+2. Recommended: [[L4D & L4D2] Explosive Chains Credit](https://forums.alliedmods.net/showthread.php?t=334655)
 
 ## Installation
 1. Delete files from old versions of the plugin.

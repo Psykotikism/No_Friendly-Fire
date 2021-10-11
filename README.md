@@ -8,7 +8,7 @@ I've had this plugin for a few months now. I figured I'd just share it with you 
 
 ## License
 No Friendly-Fire: a L4D/L4D2 SourceMod Plugin
-Copyright (C) 2017  Alfred "Psyk0tik" Llagas
+Copyright (C) 2021  Alfred "Psyk0tik" Llagas
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
@@ -17,35 +17,32 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ## About
-Just a simple plugin that disables friendly fire.
+Disables friendly fire.
 
-### What makes No Friendly-Fire viable in Left 4 Dead/Left 4 Dead 2?
-The plugin stops players from damaging each other. It's useful for encouraging teamwork and discouraging teamkilling.
+## Requirements
+1. `SourceMod 1.9` or higher
 
-### Requirements
-SourceMod 1.9.X or higher
-
-### Installation
+## Installation
 1. Delete files from old versions of the plugin.
 2. Extract the folder inside the .zip file.
 3. Place all the contents into their respective folders.
 4. If prompted to replace or merge anything, click yes.
-5. Load up the No Friendly-Fire.
-	- Type `sm_rcon sm plugins load "no_friendly-fire"` in console.
-	- OR restart the server.
-6. Customize No Friendly-Fire (Config file generated on first load).
+5. Load up `No Friendly-Fire` by doing one of the following:
+- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
+- Restart the server.
+6. Customize `No Friendly-Fire` (Config file generated on first load).
 
-### Uninstalling/Upgrading to Newer Versions
+## Uninstalling/Upgrading to Newer Versions
 1. Delete `no_friendly-fire.smx` from `addons/sourcemod/plugins` folder.
 2. Delete `no_friendly-fire.sp` from `addons/sourcemod/scripting` folder.
 3. Delete `no_friendly-fire.cfg` from `cfg/sourcemod` folder.
 4. Follow the Installation guide above. (Only for upgrading to newer versions.)
 
-### Disabling
+## Disabling
 1. Move `no_friendly-fire.smx` to `plugins/disabled` folder.
-2. Unload No Friendly-Fire.
-	- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
-	- OR restart the server.
+2. Unload `No Friendly-Fire` by doing one of the following:
+- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
+- Restart the server.
 
 ## Configuration Variables (ConVars/CVars)
 ```

@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 9.0 (October 10, 2021)
+
+1. Bug fixes:
+
+- Fixed game mode changes not being hooked and cached.
+
+2. Changes:
+
+- Added notification flags to each convar.
+- Made the `nff_pluginversion` convar unchangeable outside of the source code.
+
 ## Version 8.5 (September 3, 2021)
 
 1. Bug fixes:

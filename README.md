@@ -3,18 +3,16 @@
 ## PayPal
 [Donate to Motivate](https://paypal.me/Psyk0tikism?locale.x=en_US)
 
-## Introduction
-I've had this plugin for a few months now. I figured I'd just share it with you guys since most (if not all) of the friendly fire plugins I see for L4D and L4D2 either don't (fully) work anymore or don't do what they were originally meant to do.
-
 ## License
+> The following license is placed inside the source code of the plugin.
 No Friendly-Fire: a L4D/L4D2 SourceMod Plugin
 Copyright (C) 2021  Alfred "Psyk0tik" Llagas
 
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## About
 Disables friendly fire.

@@ -411,7 +411,7 @@ bool bIsValidEntity(int entity)
 }
 
 #if defined _l4dh_included
-public Action L4D_OnGameModeChange(int gamemode)
+public void L4D_OnGameModeChange(int gamemode)
 {
 	int iMode = g_cvNFFGameModeTypes.IntValue;
 	if (iMode != 0)

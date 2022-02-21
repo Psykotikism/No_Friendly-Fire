@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 9.5 (February 20, 2022)
+
+1. Bug fixes:
+
+- Fixed issues where certain special infected cannot suicide because of the friendly-fire block. (Thanks to `WhatsAnName` for testing and reporting!)
+
 ## Version 9.0 (October 10, 2021)
 
 1. Bug fixes:

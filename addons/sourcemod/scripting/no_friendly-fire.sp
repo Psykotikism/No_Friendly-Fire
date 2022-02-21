@@ -20,7 +20,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define NFF_VERSION "9.0"
+#define NFF_VERSION "9.5"
 
 public Plugin myinfo =
 {
@@ -225,7 +225,7 @@ Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, float &dama
 	}
 	else if (bIsValidClient(victim) && bIsValidClient(attacker) && GetClientTeam(victim) == GetClientTeam(attacker))
 	{
-		if (bIsDamageTypeBlocked(inflictor, damagetype) && (g_cvNFFSurvivors.BoolValue && GetClientTeam(victim) == 2 && GetClientTeam(attacker) == 2) || (g_cvNFFInfected.BoolValue && GetClientTeam(victim) == 3 && GetClientTeam(attacker) == 3))
+		if (bIsDamageTypeBlocked(inflictor, damagetype) && (g_cvNFFSurvivors.BoolValue && GetClientTeam(victim) == 2 && GetClientTeam(attacker) == 2) || (g_cvNFFInfected.BoolValue && attacker != victim && GetClientTeam(victim) == 3 && GetClientTeam(attacker) == 3))
 		{
 			return Plugin_Handled;
 		}

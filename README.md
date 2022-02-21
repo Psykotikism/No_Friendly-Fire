@@ -185,11 +185,11 @@ Outcome: The plugin works only in "coop" mode.
 ## Credits
 **cravenge** - For the original source code; fixing all the errors and converting the original source code into the new syntax in this [post](https://forums.alliedmods.net/showthread.php?t=301873).
 
-**Lux** - For the previous source code; showed me a better and simpler way of handling friendly fire.
+**Lux/LuxLuma** - For the previous source code; showed me a better and simpler way of handling friendly fire.
 
 **Silvers (Silvershot)** - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
 
-**Kr3m** - For reporting an issue.
+**Kr3m, WhatsAnName** - For reporting an issue.
 
 # Contact Me
 If you wish to contact me for any questions, concerns, suggestions, or criticism, I can be found here:

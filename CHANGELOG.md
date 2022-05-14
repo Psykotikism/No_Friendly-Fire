@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 10.0 (TBA)
+
+1. Bug fixes:
+
+- Fixed compilation errors on `SM 1.10` regarding `Left 4 DHooks Direct`.
+
 ## Version 9.5 (February 20, 2022)
 
 1. Bug fixes:

@@ -1,6 +1,6 @@
 /**
  * No Friendly-Fire: a L4D/L4D2 SourceMod Plugin
- * Copyright (C) 2021  Alfred "Psyk0tik" Llagas
+ * Copyright (C) 2022  Alfred "Psyk0tik" Llagas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -20,13 +20,13 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define NFF_VERSION "9.5"
+#define NFF_VERSION "10.0"
 
 public Plugin myinfo =
 {
 	name = "[L4D & L4D2] No Friendly-fire",
 	author = "Psyk0tik",
-	description = "Disables friendly fire.",
+	description = "Disables friendly-fire.",
 	version = NFF_VERSION,
 	url = "https://forums.alliedmods.net/showthread.php?t=302822"
 };
@@ -61,11 +61,16 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 #define MODEL_OXYGEN "models/props_equipment/oxygentank01.mdl"
 #define MODEL_PROPANE "models/props_junk/propanecanister001a.mdl"
 
-bool g_bLeft4DHooks, g_bMapStarted, g_bPluginEnabled;
+bool g_bMapStarted, g_bPluginEnabled;
 
-ConVar g_cvNFFBlockExplosions, g_cvNFFBlockFires, g_cvNFFBlockGuns, g_cvNFFBlockMelee, g_cvNFFDisabledGameModes, g_cvNFFEnable, g_cvNFFEnabledGameModes, g_cvNFFGameModeTypes, g_cvNFFInfected, g_cvNFFMPGameMode, g_cvNFFSaferoomOnly, g_cvNFFSurvivors;
+ConVar g_cvNFFBlockExplosions, g_cvNFFBlockFires, g_cvNFFBlockGuns, g_cvNFFBlockMelee, g_cvNFFDisabledGameModes, g_cvNFFEnable, g_cvNFFEnabledGameModes, g_cvNFFGameModeTypes, g_cvNFFInfected, g_cvNFFMPGameMode, g_cvNFFSurvivors;
 
 int g_iCurrentMode, g_iTeamID[2048], g_iUserID[MAXPLAYERS + 1];
+
+#if defined _l4dh_included
+bool g_bLeft4DHooks;
+
+ConVar g_cvNFFSaferoomOnly;
 
 public void OnLibraryAdded(const char[] name)
 {
@@ -82,6 +87,7 @@ public void OnLibraryRemoved(const char[] name)
 		g_bLeft4DHooks = false;
 	}
 }
+#endif
 
 public void OnPluginStart()
 {
@@ -95,7 +101,9 @@ public void OnPluginStart()
 	g_cvNFFGameModeTypes = CreateConVar("nff_gamemodetypes", "0", "Enable the No Friendly-Fire in these game mode types.\n0 OR 15: ALL\n1: Co-op\n2: Versus\n3: Survival\n4: Scavenge", FCVAR_NOTIFY, true, 0.0, true, 15.0);
 	g_cvNFFInfected = CreateConVar("nff_infected", "1", "Disable Infected team friendly-fire?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvNFFMPGameMode = FindConVar("mp_gamemode");
+#if defined _l4dh_included
 	g_cvNFFSaferoomOnly = CreateConVar("nff_saferoomonly", "0", "Only block friendly-fire when all survivors are still inside the saferoom.\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+#endif
 	g_cvNFFSurvivors = CreateConVar("nff_survivors", "1", "Disable Survivors team friendly-fire?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	CreateConVar("nff_pluginversion", NFF_VERSION, "No Friendly Fire version", FCVAR_DONTRECORD|FCVAR_NOTIFY|FCVAR_REPLICATED|FCVAR_SPONLY);
 	AutoExecConfig(true, "no_friendly-fire");
@@ -180,24 +188,6 @@ public void OnEntityCreated(int entity, const char[] classname)
 	}
 }
 
-void vPluginStatus()
-{
-	bool bPluginAllowed = bIsPluginEnabled();
-	if (!g_bPluginEnabled && bPluginAllowed)
-	{
-		g_bPluginEnabled = true;
-	}
-	else if (g_bPluginEnabled && !bPluginAllowed)
-	{
-		g_bPluginEnabled = false;
-	}
-}
-
-void vPluginStatusCvar(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	vPluginStatus();
-}
-
 void OnEffectSpawnPost(int entity)
 {
 	int iAttacker = GetEntPropEnt(entity, Prop_Data, "m_hOwnerEntity");
@@ -219,10 +209,16 @@ void OnPropSpawnPost(int entity)
 
 Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	if (!g_cvNFFEnable.BoolValue || !g_bPluginEnabled || (g_bLeft4DHooks && g_cvNFFSaferoomOnly.BoolValue && L4D_HasAnySurvivorLeftSafeArea()))
+	if (!g_cvNFFEnable.BoolValue || !g_bPluginEnabled)
 	{
 		return Plugin_Continue;
 	}
+#if defined _l4dh_included
+	else if (g_bLeft4DHooks && g_cvNFFSaferoomOnly.BoolValue && L4D_HasAnySurvivorLeftSafeArea())
+	{
+		return Plugin_Continue;
+	}
+#endif
 	else if (bIsValidClient(victim) && bIsValidClient(attacker) && GetClientTeam(victim) == GetClientTeam(attacker))
 	{
 		if (bIsDamageTypeBlocked(inflictor, damagetype) && (g_cvNFFSurvivors.BoolValue && GetClientTeam(victim) == 2 && GetClientTeam(attacker) == 2) || (g_cvNFFInfected.BoolValue && attacker != victim && GetClientTeam(victim) == 3 && GetClientTeam(attacker) == 3))
@@ -276,10 +272,16 @@ Action OnTakePlayerDamage(int victim, int &attacker, int &inflictor, float &dama
 
 Action OnTakePropDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	if (!g_cvNFFEnable.BoolValue || !g_bPluginEnabled || (g_bLeft4DHooks && g_cvNFFSaferoomOnly.BoolValue && L4D_HasAnySurvivorLeftSafeArea()))
+	if (!g_cvNFFEnable.BoolValue || !g_bPluginEnabled)
 	{
 		return Plugin_Continue;
 	}
+#if defined _l4dh_included
+	else if (g_bLeft4DHooks && g_cvNFFSaferoomOnly.BoolValue && L4D_HasAnySurvivorLeftSafeArea())
+	{
+		return Plugin_Continue;
+	}
+#endif
 	else if (g_cvNFFSurvivors.BoolValue)
 	{
 		if (attacker == inflictor && bIsValidEntity(inflictor) && g_iTeamID[inflictor] == 2)
@@ -300,6 +302,24 @@ Action OnTakePropDamage(int victim, int &attacker, int &inflictor, float &damage
 	}
 
 	return Plugin_Continue;
+}
+
+void vPluginStatus()
+{
+	bool bPluginAllowed = bIsPluginEnabled();
+	if (!g_bPluginEnabled && bPluginAllowed)
+	{
+		g_bPluginEnabled = true;
+	}
+	else if (g_bPluginEnabled && !bPluginAllowed)
+	{
+		g_bPluginEnabled = false;
+	}
+}
+
+void vPluginStatusCvar(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	vPluginStatus();
 }
 
 bool bIsDamageTypeBlocked(int entity, int damagetype = 0)

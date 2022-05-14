@@ -6,7 +6,7 @@
 ## License
 > The following license is placed inside the source code of the plugin.
 No Friendly-Fire: a L4D/L4D2 SourceMod Plugin
-Copyright (C) 2021  Alfred "Psyk0tik" Llagas
+Copyright (C) 2022  Alfred "Psyk0tik" Llagas
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -15,35 +15,20 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## About
-Disables friendly fire.
+Disables friendly-fire.
 
 ## Requirements
 1. `SourceMod 1.9` or higher
 2. Recommended: [[L4D & L4D2] Explosive Chains Credit](https://forums.alliedmods.net/showthread.php?t=334655)
+3. Recommended: [[L4D & L4D2] Left 4 DHooks Direct](https://forums.alliedmods.net/showthread.php?t=321696)
 
-## Installation
-1. Delete files from old versions of the plugin.
-2. Extract the folder inside the .zip file.
-3. Place all the contents into their respective folders.
-4. If prompted to replace or merge anything, click yes.
-5. Load up `No Friendly-Fire` by doing one of the following:
-- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
-- Restart the server.
-6. Customize `No Friendly-Fire` (Config file generated on first load).
+## Notes
+1. I do not provide support for listen/local servers but the plugin should still work properly on them.
+2. I will not help you with installing or troubleshooting problems on your part.
+3. If you get errors from SourceMod itself, that is your problem, not mine.
+4. MAKE SURE YOU MEET ALL THE REQUIREMENTS AND FOLLOW THE INSTALLATION GUIDE PROPERLY.
 
-## Uninstalling/Upgrading to Newer Versions
-1. Delete `no_friendly-fire.smx` from `addons/sourcemod/plugins` folder.
-2. Delete `no_friendly-fire.sp` from `addons/sourcemod/scripting` folder.
-3. Delete `no_friendly-fire.cfg` from `cfg/sourcemod` folder.
-4. Follow the Installation guide above. (Only for upgrading to newer versions.)
-
-## Disabling
-1. Move `no_friendly-fire.smx` to `plugins/disabled` folder.
-2. Unload `No Friendly-Fire` by doing one of the following:
-- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
-- Restart the server.
-
-## Configuration Variables (ConVars/CVars)
+## ConVar Settings
 ```
 // Block explosive damage?
 // 0: OFF
@@ -148,6 +133,28 @@ nff_saferoomonly "0"
 nff_survivors "1"
 ```
 
+## Installation
+1. Delete files from old versions of the plugin.
+2. Extract the folder inside the .zip file.
+3. Place all the contents into their respective folders.
+4. If prompted to replace or merge anything, click yes.
+5. Load up `No Friendly-Fire` by doing one of the following:
+- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
+- Restart the server.
+6. Customize `No Friendly-Fire` (Config file generated on first load).
+
+## Uninstalling/Upgrading to Newer Versions
+1. Delete `no_friendly-fire.smx` from `addons/sourcemod/plugins` folder.
+2. Delete `no_friendly-fire.sp` from `addons/sourcemod/scripting` folder.
+3. Delete `no_friendly-fire.cfg` from `cfg/sourcemod` folder.
+4. Follow the Installation guide above. (Only for upgrading to newer versions.)
+
+## Disabling
+1. Move `no_friendly-fire.smx` to `plugins/disabled` folder.
+2. Unload `No Friendly-Fire` by doing one of the following:
+- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
+- Restart the server.
+
 ## Questions You May Have
 > If you have any questions that aren't addressed below, feel free to message me or post on this [thread](https://forums.alliedmods.net/showthread.php?t=302822).
 
@@ -191,11 +198,8 @@ Outcome: The plugin works only in "coop" mode.
 
 **Kr3m, WhatsAnName** - For reporting an issue.
 
-# Contact Me
-If you wish to contact me for any questions, concerns, suggestions, or criticism, I can be found here:
-- [AlliedModders Forum](https://forums.alliedmods.net/member.php?u=181166) (Use this for just reporting bugs/issues or giving suggestions/ideas.)
-- [Steam](https://steamcommunity.com/profiles/76561198056665335) (Use this for getting to know me or wanting to be friends with me.)
-- `Psyk0tik#6898` on Discord (Use this for pitching in new/better code.)
+## Third-Party Revisions Notice
+If you would like to share your own revisions of this plugin, please rename the files so that there is no confusion for users.
 
-# 3rd-Party Revisions Notice
-If you would like to share your own revisions of this plugin, please rename the files! I do not want to create confusion for end-users and it will avoid conflict and negative feedback on the official versions of my work. If you choose to keep the same file names for your revisions, it will cause users to assume that the official versions are the source of any problems your revisions may have. This is to protect you (the reviser) and me (the developer)! Thank you!
+## Final Words
+Enjoy all my hard work and have fun with it!

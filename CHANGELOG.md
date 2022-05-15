@@ -1,10 +1,17 @@
 # Changelog
 
-## Version 10.0 (TBA)
+## Version 10.0 (June 1, 2022)
 
 1. Bug fixes:
 
 - Fixed compilation errors on `SM 1.10` regarding `Left 4 DHooks Direct`.
+- Fixed `OnMapEnd` not triggering due to a typo.
+- Added notification flag to the `nff_disabledgamemodes` convar.
+- Added notification flag to the `nff_enabledgamemodes` convar.
+
+2. Changes:
+
+- The `nff_saferoomonly` convar is now only available when `Left 4 DHooks Direct` is installed.
 
 ## Version 9.5 (February 20, 2022)
 

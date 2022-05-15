@@ -95,14 +95,14 @@ public void OnPluginStart()
 	g_cvNFFBlockFires = CreateConVar("nff_blockfires", "1", "Block fire damage?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvNFFBlockGuns = CreateConVar("nff_blockguns", "1", "Block bullet damage?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvNFFBlockMelee = CreateConVar("nff_blockmelee", "1", "Block melee damage?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvNFFDisabledGameModes = CreateConVar("nff_disabledgamemodes", "", "Disable the No Friendly-Fire in these game modes.\nGame mode limit: 16\nCharacter limit for each game mode: 32\nEmpty: None\nNot empty: Disabled in these game modes.");
+	g_cvNFFDisabledGameModes = CreateConVar("nff_disabledgamemodes", "", "Disable the No Friendly-Fire in these game modes.\nGame mode limit: 16\nCharacter limit for each game mode: 32\nEmpty: None\nNot empty: Disabled in these game modes.", FCVAR_NOTIFY);
 	g_cvNFFEnable = CreateConVar("nff_enable", "1", "Enable the plugin?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvNFFEnabledGameModes = CreateConVar("nff_enabledgamemodes", "", "Enable the No Friendly-Fire in these game modes.\nGame mode limit: 16\nCharacter limit for each game mode: 32\nEmpty: None\nNot empty: Enabled in these game modes.");
+	g_cvNFFEnabledGameModes = CreateConVar("nff_enabledgamemodes", "", "Enable the No Friendly-Fire in these game modes.\nGame mode limit: 16\nCharacter limit for each game mode: 32\nEmpty: None\nNot empty: Enabled in these game modes.", FCVAR_NOTIFY);
 	g_cvNFFGameModeTypes = CreateConVar("nff_gamemodetypes", "0", "Enable the No Friendly-Fire in these game mode types.\n0 OR 15: ALL\n1: Co-op\n2: Versus\n3: Survival\n4: Scavenge", FCVAR_NOTIFY, true, 0.0, true, 15.0);
 	g_cvNFFInfected = CreateConVar("nff_infected", "1", "Disable Infected team friendly-fire?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvNFFMPGameMode = FindConVar("mp_gamemode");
 #if defined _l4dh_included
-	g_cvNFFSaferoomOnly = CreateConVar("nff_saferoomonly", "0", "Only block friendly-fire when all survivors are still inside the saferoom.\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvNFFSaferoomOnly = CreateConVar("nff_saferoomonly", "0", "Only block friendly-fire when all survivors are still inside the saferoom.\nRequires \"Left 4 DHooks Direct\": https://forums.alliedmods.net/showthread.php?t=321696\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 #endif
 	g_cvNFFSurvivors = CreateConVar("nff_survivors", "1", "Disable Survivors team friendly-fire?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	CreateConVar("nff_pluginversion", NFF_VERSION, "No Friendly Fire version", FCVAR_DONTRECORD|FCVAR_NOTIFY|FCVAR_REPLICATED|FCVAR_SPONLY);
@@ -157,7 +157,7 @@ public void OnClientPutInServer(int client)
 	SDKHook(client, SDKHook_OnTakeDamage, OnTakePlayerDamage);
 }
 
-public void OnMapEnded()
+public void OnMapEnd()
 {
 	g_bMapStarted = false;
 }

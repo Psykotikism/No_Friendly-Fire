@@ -115,6 +115,7 @@ nff_gamemodetypes "0"
 nff_infected "1"
 
 // Only block friendly-fire when all survivors are still inside the saferoom.
+// Requires "Left 4 DHooks Direct": https://forums.alliedmods.net/showthread.php?t=321696
 // 0: OFF
 // 1: ON
 // -

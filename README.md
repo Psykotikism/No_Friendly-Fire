@@ -153,25 +153,17 @@ nff_survivors "1"
 
 ## Installation
 1. Delete files from old versions of the plugin.
-2. Extract the folder inside the .zip file.
-3. Place all the contents into their respective folders.
-4. If prompted to replace or merge anything, click yes.
-5. Load up `No Friendly-Fire` by doing one of the following:
-- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
-- Restart the server.
-6. Customize `No Friendly-Fire` (Config file generated on first load).
+3. Place `no_friendly-fire.smx` in the `addons/sourcemod/plugins` folder.
+4. Place `no_friendly-fire.sp` in the `addons/sourcemod/scripting` folder.
 
 ## Uninstalling/Upgrading to Newer Versions
-1. Delete `no_friendly-fire.smx` from `addons/sourcemod/plugins` folder.
-2. Delete `no_friendly-fire.sp` from `addons/sourcemod/scripting` folder.
-3. Delete `no_friendly-fire.cfg` from `cfg/sourcemod` folder.
+1. Delete `no_friendly-fire.sp` from the `addons/sourcemod/scripting` folder.
+2. Delete `no_friendly-fire.smx` from the `addons/sourcemod/plugins` folder.
 4. Follow the Installation guide above. (Only for upgrading to newer versions.)
 
 ## Disabling
-1. Move `no_friendly-fire.smx` to `plugins/disabled` folder.
-2. Unload `No Friendly-Fire` by doing one of the following:
-- Type `sm_rcon sm plugins unload "no_friendly-fire"` in console.
-- Restart the server.
+1. Move `no_friendly-fire.smx` to the `plugins/disabled` folder.
+2. Unload `No Friendly-Fire` by typing `sm plugins unload no_friendly-fire` in the server console.
 
 ## Questions You May Have
 > If you have any questions that aren't addressed below, feel free to message me or post on this [thread](https://forums.alliedmods.net/showthread.php?t=302822).

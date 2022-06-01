@@ -5,6 +5,7 @@
 
 ## License
 > The following license is placed inside the source code of the plugin.
+
 No Friendly-Fire: a L4D/L4D2 SourceMod Plugin
 Copyright (C) 2022  Alfred "Psyk0tik" Llagas
 
@@ -17,6 +18,17 @@ You should have received a copy of the GNU General Public License along with thi
 ## About
 Disables friendly-fire.
 
+## Credits
+**cravenge** - For the original source code; fixing all the errors and converting the original source code into the new syntax in this [post](https://forums.alliedmods.net/showthread.php?t=301873).
+
+**Lux/LuxLuma** - For the previous source code; showed me a better and simpler way of handling friendly fire.
+
+**Silvers (Silvershot)** - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
+
+**Kr3m, WhatsAnName** - For reporting an issue.
+
+**SourceMod Team** - For continually updating/improving `SourceMod`.
+
 ## Requirements
 1. `SourceMod 1.9` or higher
 2. Recommended: [[L4D & L4D2] Explosive Chains Credit](https://forums.alliedmods.net/showthread.php?t=334655)
@@ -27,6 +39,11 @@ Disables friendly-fire.
 2. I will not help you with installing or troubleshooting problems on your part.
 3. If you get errors from SourceMod itself, that is your problem, not mine.
 4. MAKE SURE YOU MEET ALL THE REQUIREMENTS AND FOLLOW THE INSTALLATION GUIDE PROPERLY.
+
+## Features
+1. Block friendly-fire for survivors.
+2. Block friendly-fire for special infected.
+3. Filter which damage types to allow/block.
 
 ## ConVar Settings
 ```
@@ -189,15 +206,6 @@ nff_disabledgamemodes "coop" // The plugin is disabled in "coop" mode.
 
 Outcome: The plugin works only in "coop" mode.
 ```
-
-## Credits
-**cravenge** - For the original source code; fixing all the errors and converting the original source code into the new syntax in this [post](https://forums.alliedmods.net/showthread.php?t=301873).
-
-**Lux/LuxLuma** - For the previous source code; showed me a better and simpler way of handling friendly fire.
-
-**Silvers (Silvershot)** - For the code that allows users to enable/disable the plugin in certain game modes and for blocking damage after idle/spectator team change and player disconnects.
-
-**Kr3m, WhatsAnName** - For reporting an issue.
 
 ## Third-Party Revisions Notice
 If you would like to share your own revisions of this plugin, please rename the files so that there is no confusion for users.
